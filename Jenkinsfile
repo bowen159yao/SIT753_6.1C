@@ -5,13 +5,15 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build the application using Maven.'
+                bat 'mvn clean package' // Execute Maven build command
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 script {
                     try {
-                        sh 'mvn test > test_results.log'
+                        // Direct Maven to output the test results to a log file
+                        bat 'mvn test > test_results.log'
                         echo 'Tests succeeded.'
                     } catch (Exception e) {
                         echo 'Tests failed.'
@@ -34,6 +36,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Analyze code with SonarQube.'
+                bat 'mvn sonar:sonar' // Execute SonarQube analysis
             }
         }
 
@@ -41,7 +44,8 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'mvn org.owasp:dependency-check-maven:check > security_scan.log'
+                        // Direct OWASP Dependency Check to output results to a log file
+                        bat 'mvn org.owasp:dependency-check-maven:check > security_scan.log'
                         echo 'Security scan succeeded.'
                     } catch (Exception e) {
                         echo 'Security scan failed.'
@@ -64,16 +68,19 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploy application to AWS EC2 staging environment.'
+                bat './deploy-staging.bat' // Assume you have a corresponding batch script for deployment
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Run integration tests on the staging environment using Selenium.'
+                bat 'call run-integration-tests.bat' // Execute a batch file to run tests
             }
         }
         stage('Deploy to Production') {
             steps {
                 echo 'Deploy application to AWS EC2 production environment.'
+                bat './deploy-production.bat' // Similarly, a batch script for production deployment
             }
         }
     }
@@ -84,4 +91,3 @@ pipeline {
         }
     }
 }
-
