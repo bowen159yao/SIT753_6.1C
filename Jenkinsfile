@@ -1,25 +1,30 @@
 pipeline {
     agent any
 
+    environment {
+        EMAIL_RECIPIENTS = 'notify@example.com'
+    }
 
     stages {
         stage('Build') {
             steps {
                 echo 'Building the application using Maven.'
-                
+                bat 'mvn clean package'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Testing ...'
+                bat 'mvn test > test_results.log'
             }
             post {
                 always {
-                    mail to: "bowenyao159@gmail.com",
-                    subject: "Build Status Email",
-                    body: "Build log attached!"
-                    
+                    emailext(
+                        to: '${env.EMAIL_RECIPIENTS}',
+                        subject: "${env.JOB_NAME} - Test Stage Completed",
+                        body: "The test stage has completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "test_results.log"
+                    )
                 }
             }
         }
@@ -27,21 +32,23 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing code with SonarQube.'
-                
+                bat 'mvn sonar:sonar'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Scanning ...'
+                bat 'mvn org.owasp:dependency-check-maven:check > security_scan.log'
             }
             
             post {
                 always {
-                    mail to: "bowenyao159@gmail.com",
-                    subject: "Build Status Email",
-                    body: "Build log attached!"
-                    
+                    emailext(
+                        to: '${env.EMAIL_RECIPIENTS}',
+                        subject: "${env.JOB_NAME} - Security Scan Stage Completed",
+                        body: "The security scan stage has completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "security_scan.log"
+                    )
                 }
             }
         }
