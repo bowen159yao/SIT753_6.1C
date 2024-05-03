@@ -8,25 +8,51 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Build the application using Maven.'
+                echo 'Building the application using Maven.'
+                bat 'gradle build'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Run unit and integration tests using JUnit and Selenium.'
+                bat 'gradle test'
+                bat 'type build\\reports\\tests\\test-results.html > test_results.log'  // Redirecting test results to a log file
+            }
+            post {
+                always {
+                    emailext(
+                        to: '${env.EMAIL_RECIPIENTS}',
+                        subject: "${env.JOB_NAME} - Test Stage Completed",
+                        body: "The test stage has completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "test_results.log"
+                    )
+                }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo 'Analyze code with SonarQube.'
+                echo 'Analyzing code with SonarQube.'
+                bat 'gradle sonarqube'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Perform security scan with OWASP Dependency Check.'
+                echo 'Performing security scan using OWASP Dependency Check with Gradle.'
+                bat 'gradle dependencyCheckAnalyze'
+                bat 'type build\\reports\\dependency-check-report.html > security_scan.log'  // Redirecting security scan results to a log file
+            }
+            
+            post {
+                always {
+                    emailext(
+                        to: '${env.EMAIL_RECIPIENTS}',
+                        subject: "${env.JOB_NAME} - Security Scan Stage Completed",
+                        body: "The security scan stage has completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "security_scan.log"
+                    )
+                }
             }
         }
 
@@ -50,13 +76,7 @@ pipeline {
     }
     post {
         always {
-            emailext (
-                to: "${env.EMAIL_RECIPIENTS}",
-                subject: "Jenkins Pipeline Status: ${env.JOB_NAME} - ${currentBuild.currentResult}",
-                body: """<p>Pipeline execution of ${env.JOB_NAME} has completed.</p>
-                         <p>Status: ${currentBuild.currentResult}</p>""",
-                attachmentsPattern: "**/test_results.log,**/security_scan.log"
-            )
+            echo 'Pipeline execution complete.'
         }
     }
     
