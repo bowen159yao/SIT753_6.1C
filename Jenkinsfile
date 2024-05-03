@@ -20,7 +20,7 @@ pipeline {
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
                         attachmentsPattern: 'logs/*.log'
-                        ）
+                        )
                 }
             }
         }
@@ -42,6 +42,7 @@ pipeline {
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
                         attachmentsPattern: 'logs/*.log'
+                        )
                 }
             }
         }
