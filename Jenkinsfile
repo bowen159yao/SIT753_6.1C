@@ -1,75 +1,86 @@
- pipeline {
-    agent any // This specifies that the pipeline can run on any available agent
+pipeline {
+    agent any
 
     stages {
         stage('Build') {
             steps {
-                script {
-                    // Assuming you're using Maven as the build tool
-                    sh 'mvn clean package'
-                }
+                echo 'Build the application using Maven.'
             }
         }
-
         stage('Unit and Integration Tests') {
             steps {
                 script {
-                    // Run unit and integration tests, possibly with Maven
-                    sh 'mvn test'
+                    try {
+                        sh 'mvn test > test_results.log'
+                        echo 'Tests succeeded.'
+                    } catch (Exception e) {
+                        echo 'Tests failed.'
+                        throw e // Re-throw exception to mark stage as failed
+                    }
+                }
+            }
+            post {
+                always {
+                    emailext (
+                        subject: "${env.JOB_NAME} - Test Stage Completed",
+                        body: """<p>Test stage completed. Check the attached log for details.</p>
+                                 <p>Status: ${currentBuild.currentResult}</p>""",
+                        attachmentsPattern: "**/test_results.log",
+                        to: "${env.EMAIL_RECIPIENTS}"
+                    )
                 }
             }
         }
-
         stage('Code Analysis') {
             steps {
-                script {
-                    // Example: Using SonarQube for code quality analysis
-                    sh 'mvn sonar:sonar'
-                }
+                echo 'Analyze code with SonarQube.'
             }
         }
 
         stage('Security Scan') {
             steps {
                 script {
-                    // Example: Using OWASP Dependency Check
-                    sh 'mvn org.owasp:dependency-check-maven:check'
+                    try {
+                        sh 'mvn org.owasp:dependency-check-maven:check > security_scan.log'
+                        echo 'Security scan succeeded.'
+                    } catch (Exception e) {
+                        echo 'Security scan failed.'
+                        throw e // Re-throw exception to mark stage as failed
+                    }
+                }
+            }
+            post {
+                always {
+                    emailext (
+                        subject: "${env.JOB_NAME} - Security Scan Stage Completed",
+                        body: """<p>Security scan stage completed. Check the attached log for details.</p>
+                                 <p>Status: ${currentBuild.currentResult}</p>""",
+                        attachmentsPattern: "**/security_scan.log",
+                        to: "${env.EMAIL_RECIPIENTS}"
+                    )
                 }
             }
         }
-
         stage('Deploy to Staging') {
             steps {
-                script {
-                    // Deploy to a staging server, example using a script
-                    sh './deploy-staging.sh'
-                }
+                echo 'Deploy application to AWS EC2 staging environment.'
             }
         }
-
         stage('Integration Tests on Staging') {
             steps {
-                script {
-                    // Run integration tests on the staging server
-                    sh 'curl -s http://staging-server-url/api/v1/tests'
-                }
+                echo 'Run integration tests on the staging environment using Selenium.'
             }
         }
-
         stage('Deploy to Production') {
             steps {
-                script {
-                    // Deploy to the production server
-                    sh './deploy-production.sh'
-                }
+                echo 'Deploy application to AWS EC2 production environment.'
             }
         }
     }
 
     post {
         always {
-            // Send notification or perform some cleanup tasks
-            echo 'Pipeline execution is complete!'
+            echo 'Pipeline execution complete.'
         }
     }
 }
