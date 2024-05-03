@@ -9,14 +9,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application using Maven.'
-                bat 'gradle build'
+                bat 'mvn clean package'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                bat 'gradle test'
-                bat 'type build\\reports\\tests\\test-results.html > test_results.log'  // Redirecting test results to a log file
+                bat 'mvn test > test_results.log'
             }
             post {
                 always {
@@ -33,15 +32,13 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Analyzing code with SonarQube.'
-                bat 'gradle sonarqube'
+                bat 'mvn sonar:sonar'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Performing security scan using OWASP Dependency Check with Gradle.'
-                bat 'gradle dependencyCheckAnalyze'
-                bat 'type build\\reports\\dependency-check-report.html > security_scan.log'  // Redirecting security scan results to a log file
+                bat 'mvn org.owasp:dependency-check-maven:check > security_scan.log'
             }
             
             post {
