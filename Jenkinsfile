@@ -19,7 +19,7 @@ pipeline {
                     mail to: "bowenyao159@gmail.com",
                     subject: "Build Status Email",
                     body: "Build log attached!"
-                    
+                    attachmentsPattern: '**/*.log'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
                     mail to: "bowenyao159@gmail.com",
                     subject: "Build Status Email",
                     body: "Build log attached!"
-                    
+                    attachmentsPattern: '**/*.log'
                 }
             }
         }
