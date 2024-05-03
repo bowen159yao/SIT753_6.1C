@@ -16,10 +16,12 @@ pipeline {
             }
             post {
                 always {
-                    mail to: "bowenyao159@gmail.com",
-                    subject: "Build Status Email",
-                    body: "Build log attached!"
-                    attachmentsPattern: '**/*.log'
+                    emailext(
+                        to: 'bowenyao159@gmail.com',
+                        subject: "${env.JOB_NAME} - Test Results",
+                        body: "Unit and Integration Test stage completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "**/target/surefire-reports/*.txt,**/target/failsafe-reports/*.txt"
+                    )
                 }
             }
         }
@@ -38,10 +40,12 @@ pipeline {
             
             post {
                 always {
-                    mail to: "bowenyao159@gmail.com",
-                    subject: "Build Status Email",
-                    body: "Build log attached!"
-                    attachmentsPattern: '**/*.log'
+                    emailext(
+                        to: 'bowenyao159@gmail.com',
+                        subject: "${env.JOB_NAME} - Test Results",
+                        body: "Unit and Integration Test stage completed. Status: ${currentBuild.currentResult}",
+                        attachmentsPattern: "**/target/surefire-reports/*.txt,**/target/failsafe-reports/*.txt"
+                    )
                 }
             }
         }
