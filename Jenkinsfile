@@ -16,7 +16,7 @@ pipeline {
             post {
                 always {
                     emailext (
-                        to: 'your@email.com',
+                        to: 'bowenyao159@gmail.com',
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
                         attachmentsPattern: 'logs/*.log'
@@ -38,7 +38,7 @@ pipeline {
             post {
                 always {
                     emailext (
-                        to: 'your@email.com',
+                        to: 'bowenyao159@gmail.com',
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
                         attachmentsPattern: 'logs/*.log'
