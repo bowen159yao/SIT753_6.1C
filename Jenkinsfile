@@ -48,17 +48,16 @@ pipeline {
             }
         }
     }
-
     post {
-        stage('Notify') {
-            steps {
-                emailext (
-                    recipients: '${EMAIL_RECIPIENTS}',
-                    subject: "Jenkins Pipeline Status: ${currentBuild.fullDisplayName}",
-                    body: """<p>Pipeline finished. Status: ${currentBuild.currentResult}</p>""",
-                    attachmentsPattern: "**/test_results.log,**/security_scan.log"
-                )
-            }
+        always {
+            emailext (
+                to: "${env.EMAIL_RECIPIENTS}",
+                subject: "Jenkins Pipeline Status: ${env.JOB_NAME} - ${currentBuild.currentResult}",
+                body: """<p>Pipeline execution of ${env.JOB_NAME} has completed.</p>
+                         <p>Status: ${currentBuild.currentResult}</p>""",
+                attachmentsPattern: "**/test_results.log,**/security_scan.log"
+            )
         }
     }
+    
 }
