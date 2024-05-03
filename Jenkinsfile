@@ -1,9 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        EMAIL_RECIPIENTS = 'notify@example.com'
-    }
 
     stages {
         stage('Build') {
