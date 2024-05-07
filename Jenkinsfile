@@ -18,8 +18,8 @@ pipeline {
                     emailext (
                         attachLog: true,
                         to: 'bowenyao159@gmail.com',
-                        subject: 'Security Scan Stage Failure',
-                        body: 'Security scan stage failed.',
+                        subject: 'Tests Stage Failure',
+                        body: 'Tests stage failed.',
                         attachmentsPattern: 'logs/*.log'
                         )
                 }
