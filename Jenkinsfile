@@ -16,6 +16,7 @@ pipeline {
             post {
                 always {
                     emailext (
+                        attachLog: true,
                         to: 'bowenyao159@gmail.com',
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
@@ -38,6 +39,7 @@ pipeline {
             post {
                 always {
                     emailext (
+                        attachLog: true,
                         to: 'bowenyao159@gmail.com',
                         subject: 'Security Scan Stage Failure',
                         body: 'Security scan stage failed.',
