@@ -16,18 +16,20 @@ pipeline {
             post {
                 success {
                     emailext (
-                        to: 'specified-email@example.com',
+                        attachLog: true,
+                        to: 'bowenyao159@gmail.com',
                         subject: "SUCCESS: Test Stage - ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "The Test stage completed successfully.",
-                        attachmentsPattern: '**/test-results/*.log'
+                        attachmentsPattern: '**/log'
                     )
                 }
                 failure {
                     emailext (
-                        to: 'specified-email@example.com',
+                        attachLog: true,  
+                        to: 'bowenyao159@gmail.com',
                         subject: "FAILURE: Test Stage - ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "The Test stage failed. See attached logs for more details.",
-                        attachmentsPattern: '**/test-results/*.log'
+                        attachmentsPattern: '**/log'
                     )
                 }
             }
@@ -46,18 +48,20 @@ pipeline {
             post {
                 success {
                     emailext (
-                        to: 'specified-email@example.com',
+                        attachLog: true,
+                        to: 'bowenyao159@gmail.com',
                         subject: "SUCCESS: Security Scan Stage - ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "The Security Scan stage completed successfully.",
-                        attachmentsPattern: '**/security-scan-results/*.log'
+                        attachmentsPattern: '**/log'
                     )
                 }
                 failure {
                     emailext (
-                        to: 'specified-email@example.com',
+                        attachLog: true,
+                        to: 'bowenyao159@gmail.com',
                         subject: "FAILURE: Security Scan Stage - ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "The Security Scan stage failed. See attached logs for more details.",
-                        attachmentsPattern: '**/security-scan-results/*.log'
+                        attachmentsPattern: '**/log'
                     )
                 }
             }
